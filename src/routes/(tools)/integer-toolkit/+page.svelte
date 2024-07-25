@@ -4,15 +4,27 @@
   let palindromeType = "mirrored";
   let inputText = "";
   let resultText = "";
+  let incrementValue = 0;
 
   function generatePalindrome() {
+    let incrementedText = incrementIntegers(inputText, incrementValue);
     if (palindromeType === "mirrored") {
-      resultText = mirroredPalindrome(inputText);
+      resultText = mirroredPalindrome(incrementedText);
     } else if (palindromeType === "centered") {
-      resultText = centeredPalindrome(inputText);
+      resultText = centeredPalindrome(incrementedText);
     } else if (palindromeType === "minimal") {
-      resultText = minimalPalindrome(inputText);
+      resultText = minimalPalindrome(incrementedText);
     }
+  }
+
+  function incrementIntegers(input, increment) {
+    return input
+      .split(/\s+/)
+      .map((str) => {
+        let num = parseInt(str);
+        return isNaN(num) ? str : (num + increment).toString();
+      })
+      .join(" ");
   }
 
   function mirroredPalindrome(input) {
@@ -39,10 +51,10 @@
 
   $: if (inputText) generatePalindrome();
   $: if (palindromeType) generatePalindrome();
+  $: if (incrementValue !== undefined) generatePalindrome();
 </script>
 
 <div class="tools-container space-y-8">
-  <!-- Integer Palindromizer -->
   <div class="tool">
     <h1 class="text-gray-900 text-2xl dark:text-white ml-12 font-medium">
       1. Integer Palindromizer
@@ -100,7 +112,7 @@
         </div>
 
         <div
-          class="mt-4 gap-4 items-center mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 overflow-hidden"
+          class="mt-4 gap-4 items-center mx-auto max-w-screen-xl lg:grid lg:grid-cols-3 overflow-hidden"
         >
           <div
             class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4"
@@ -114,6 +126,20 @@
               class="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               bind:value={inputText}
             ></textarea>
+          </div>
+
+          <div
+            class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4"
+          >
+            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">
+              Increment Value
+            </h2>
+            <input
+              type="number"
+              placeholder="Enter Increment Value"
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              bind:value={incrementValue}
+            />
           </div>
 
           <div
@@ -148,11 +174,6 @@
             >
               Download as txt
             </button>
-            <!-- <button
-  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-  >
-  Download as pdf
-</button> -->
           </div>
         </div>
       </div>
