@@ -25,7 +25,7 @@
         return isNaN(num) ? str : (num + increment).toString();
       })
       .join(" ");
-  }t
+  }
 
   function mirroredPalindrome(input) {
     let reversed = input.split("").reverse().join("");
