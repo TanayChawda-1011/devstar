@@ -1,153 +1,85 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  let palindromeType = "mirrored";
   let inputText = "";
   let resultText = "";
   let incrementValue = 0;
+  let incrementType = "add";
 
-  function generatePalindrome() {
-    let incrementedText = incrementIntegers(inputText, incrementValue);
-    if (palindromeType === "mirrored") {
-      resultText = mirroredPalindrome(incrementedText);
-    } else if (palindromeType === "centered") {
-      resultText = centeredPalindrome(incrementedText);
-    } else if (palindromeType === "minimal") {
-      resultText = minimalPalindrome(incrementedText);
-    }
+  function generateResult() {
+    resultText = incrementValues(inputText, incrementValue, incrementType);
   }
 
-  function incrementIntegers(input, increment) {
+  function incrementValues(input, increment, type) {
     return input
       .split(/\s+/)
       .map((str) => {
-        let num = parseInt(str);
-        return isNaN(num) ? str : (num + increment).toString();
+        let num = parseFloat(str);
+        if (isNaN(num)) return str;
+        switch (type) {
+          case "add":
+            return (num + increment).toString();
+          case "subtract":
+            return (num - increment).toString();
+          case "multiply":
+            return (num * increment).toString();
+          case "divide":
+            return increment !== 0 ? (num / increment).toString() : "Error: Division by zero";
+          case "power":
+            return Math.pow(num, increment).toString();
+          case "root":
+            return Math.pow(num, 1 / increment).toString();
+          default:
+            return str;
+        }
       })
       .join(" ");
   }
 
-  function mirroredPalindrome(input) {
-    let reversed = input.split("").reverse().join("");
-    return input + reversed;
-  }
-
-  function centeredPalindrome(input) {
-    let reversed = input.split("").reverse().join("");
-    return input + reversed.slice(1);
-  }
-
-  function minimalPalindrome(input) {
-    let len = input.length;
-    for (let i = 0; i < len; i++) {
-      let prefix = input.slice(0, i);
-      let suffix = input.slice(i);
-      if (suffix === suffix.split("").reverse().join("")) {
-        return input + prefix.split("").reverse().join("");
-      }
-    }
-    return input;
-  }
-
-  $: if (inputText) generatePalindrome();
-  $: if (palindromeType) generatePalindrome();
-  $: if (incrementValue !== undefined) generatePalindrome();
+  $: if (inputText || incrementValue !== undefined || incrementType) generateResult();
 </script>
 
 <div class="tools-container space-y-8">
   <div class="tool">
     <h1 class="text-gray-900 text-2xl dark:text-white ml-12 font-medium">
-      1. Integer Palindromizer
+      Advanced Value Incrementor
     </h1>
     <div class="py-8 px-4 mx-auto max-w-screen-xl lg:px-12">
-      <div
-        class="card p-8 relative items-center mx-auto max-w-screen-xl overflow-hidden rounded-lg"
-      >
-        <div class="flex gap-8 mb-4">
-          <label class="flex flex-col items-center">
-            <input
-              type="radio"
-              name="palindromeType"
-              value="mirrored"
-              class="mr-2"
-              bind:group={palindromeType}
-            />
-            <span class="text-gray-900 text-sm dark:text-white"
-              >Mirrored Palindrome</span
-            >
-            <span class="text-xs text-gray-500 dark:text-gray-400"
-              >Example: 1232 → 12322321.</span
-            >
-          </label>
-          <label class="flex flex-col items-center">
-            <input
-              type="radio"
-              name="palindromeType"
-              value="centered"
-              class="mr-2"
-              bind:group={palindromeType}
-            />
-            <span class="text-gray-900 text-sm dark:text-white"
-              >Centered Palindrome</span
-            >
-            <span class="text-xs text-gray-500 dark:text-gray-400"
-              >Example: 1232 → 1232321.</span
-            >
-          </label>
-          <label class="flex flex-col items-center">
-            <input
-              type="radio"
-              name="palindromeType"
-              value="minimal"
-              class="mr-2"
-              bind:group={palindromeType}
-            />
-            <span class="text-gray-900 text-sm dark:text-white"
-              >Minimal Palindrome</span
-            >
-            <span class="text-xs text-gray-500 dark:text-gray-400"
-              >Example: 1232 → 12321.</span
-            >
-          </label>
-        </div>
-
-        <div
-          class="mt-4 gap-4 items-center mx-auto max-w-screen-xl lg:grid lg:grid-cols-3 overflow-hidden"
-        >
-          <div
-            class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4"
-          >
-            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">
-              Input Integers
-            </h2>
+      <div class="card p-8 relative items-center mx-auto max-w-screen-xl overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg">
+        <div class="mt-4 gap-4 items-center mx-auto max-w-screen-xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4">
+            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">Input Values</h2>
             <textarea
-              placeholder="Enter Integers"
+              placeholder="Enter values (one per line)"
               rows="8"
               class="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               bind:value={inputText}
             ></textarea>
           </div>
 
-          <div
-            class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4"
-          >
-            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">
-              Increment Value
-            </h2>
+          <div class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4">
+            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">Increment Settings</h2>
             <input
               type="number"
               placeholder="Enter Increment Value"
-              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-4"
               bind:value={incrementValue}
             />
+            <select
+              bind:value={incrementType}
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+              <option value="add">Add</option>
+              <option value="subtract">Subtract</option>
+              <option value="multiply">Multiply</option>
+              <option value="divide">Divide</option>
+              <option value="power">Power</option>
+              <option value="root">Root</option>
+            </select>
           </div>
 
-          <div
-            class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4"
-          >
-            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">
-              Palindromic Integers
-            </h2>
+          <div class="rounded-lg overflow-hidden bg-gray-50 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 p-4">
+            <h2 class="text-lg font-medium text-gray-700 dark:text-white mb-2">Result</h2>
             <textarea
               placeholder="Result"
               rows="8"
@@ -155,25 +87,6 @@
               bind:value={resultText}
               readonly
             ></textarea>
-          </div>
-        </div>
-
-        <div
-          class="items-center mx-auto max-w-screen-xl lg:grid lg:grid-cols-1 overflow-hidden"
-        >
-          <div
-            class="mt-8 gap-4 items-center mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 overflow-hidden"
-          >
-            <button
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              Copy
-            </button>
-            <button
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              Download as txt
-            </button>
           </div>
         </div>
       </div>
